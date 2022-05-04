@@ -11,7 +11,6 @@ used in the examples.
   https://pipenv.pypa.io/en/latest/
 
 * create a working directory and change to that directory:
-  .. code-block::
 
         mkdir api_cst
         cd api_cst
