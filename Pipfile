@@ -5,7 +5,9 @@ name = "pypi"
 
 [packages]
 python-dotenv = "*"
-wxc-sdk = "*"
+wxc-sdk = ">=1.4.0"
+pyyaml = "*"
+requests = "*"
 
 [dev-packages]
 
