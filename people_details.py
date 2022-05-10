@@ -5,8 +5,9 @@ Get all people details using sync calls vs. using asyncio
 import asyncio
 from time import perf_counter
 
-from wxc_sdk import WebexSimpleApi, Tokens
+from wxc_sdk import WebexSimpleApi
 from wxc_sdk.as_api import AsWebexSimpleApi
+from wxc_sdk.tokens import Tokens
 
 from integration_token import get_tokens
 

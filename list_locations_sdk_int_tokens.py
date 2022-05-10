@@ -2,10 +2,9 @@
 """
 Demonstration of how to call a Webex API endpoint using the SDK with cached integration tokens
 """
-import os
 
 import wxc_sdk
-from dotenv import load_dotenv
+
 from integration_token import get_tokens
 
 

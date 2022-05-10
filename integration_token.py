@@ -10,11 +10,11 @@ import os
 from typing import Optional
 
 from dotenv import load_dotenv
-from yaml import safe_load, safe_dump
-
 from wxc_sdk import WebexSimpleApi
 from wxc_sdk.integration import Integration
+from wxc_sdk.scopes import parse_scopes
 from wxc_sdk.tokens import Tokens
+from yaml import safe_load, safe_dump
 
 log = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ def build_integration() -> Integration:
     """
     client_id = os.getenv('INTEGRATION_CLIENT_ID')
     client_secret = os.getenv('INTEGRATION_CLIENT_SECRET')
-    scopes = os.getenv('INTEGRATION_SCOPES')
+    scopes = parse_scopes(os.getenv('INTEGRATION_SCOPES'))
     redirect_url = 'http://localhost:6001/redirect'
     if not all((client_id, client_secret, scopes)):
         raise ValueError('failed to get integration parameters from environment')
