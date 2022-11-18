@@ -101,8 +101,12 @@ async def main():
         # do we actually need an update?
         update_needed = False
 
+        # create copy of each agent instance; we don't want to update the original agent objects
+        # to make sure that details still holds the state before any update
+        agents = [agent.copy(deep=True) for agent in details.agents]
+
         # iterate through the existing agents and see if we have to apply any change
-        for agent in details.agents:
+        for agent in agents:
             name = agent_name(agent)
             # do we have to take action to join this agent?
             if name in to_join and not agent.join_enabled:
@@ -127,7 +131,7 @@ async def main():
                           for user in to_add)
 
         # update the queue
-        if update_needed or to_add:
+        if (update_needed or to_add) and not args.dryrun:
             # simplified update: we only messed with the agents
             update = CallQueue(agents=new_agents)
             await api.telephony.callqueue.update(location_id=queue.location_id, queue_id=queue.id,
@@ -165,7 +169,8 @@ async def main():
 
     # parse command line
     parser = ArgumentParser(description='Modify call queue settings from the CLI')
-    parser.add_argument('location', help='name of location to work on. Can be "all" to work on all locations.')
+    parser.add_argument('--location', '-l', type=str, required=False, nargs='+',
+                        help='name of location to work on. If missing then work on all locations.')
 
     parser.add_argument('--queue', '-q', type=str, required=False, nargs='+',
                         help='name(s) of queue(s) to operate on. If missing then work on all queues in location.')
@@ -181,6 +186,8 @@ async def main():
 
     parser.add_argument('--add', '-a', type=str, required=False, nargs='+', dest='add_user',
                         help='Add given users to given queue(s).')
+    parser.add_argument('--dryrun', '-d', required=False, action='store_true',
+                        help='Dry run; don\'t apply any changes')
     args = parser.parse_args()
 
     # get environment variables from .env; required for integration parameters
@@ -190,19 +197,26 @@ async def main():
     tokens = get_tokens()
     async with AsWebexSimpleApi(tokens=tokens) as api:
         # validate location parameter
-        location_name = args.location
-        if location_name == 'all':
-            # operate on all locations
-            locations = await api.locations.list()
-        else:
-            # try to find the given location
-            location = next((loc for loc in await api.locations.list(name=location_name)
-                             if loc.name == location_name), None)
-            if location is None:
+        location_names = args.location or []
+
+        # list of all locations with names matching one of the provided names
+        locations = [loc for loc in await api.locations.list()
+                     if not location_names or loc.name in set(location_names)]
+
+        if not location_names:
+            print(f'Considering all {len(locations)} locations')
+
+        # set of names of matching locations
+        found_location_names = set(loc.name for loc in locations)
+
+        # Error message for each location name argument not matching an actual location
+        for location_name in location_names:
+            if location_name not in found_location_names:
                 print(f'location "{location_name}" not found', file=sys.stderr)
-                exit(1)
-            # the list of locations is pretty short :-)
-            locations = [location]
+
+        if not locations:
+            print('Found no locations to work on', file=sys.stderr)
+            exit(1)
 
         # which queues do we need to operate on?
         location_ids = set(loc.location_id for loc in locations)
@@ -213,6 +227,7 @@ async def main():
         # filter based on location parameter
         queues = [queue for queue in queues
                   if (all_queues or queue.name in queue_names) and queue.location_id in location_ids]
+
         # len of queue names for nicer output
         queue_len = max(len(queue.name) for queue in queues)
 
