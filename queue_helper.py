@@ -1,17 +1,15 @@
 #!/usr/bin/env python
 """
-usage: queue-helper.py [-h] [--queue QUEUE [QUEUE ...]] [--join JOIN_AGENT [JOIN_AGENT ...]]
-                       [--unjoin UNJOIN_AGENT [UNJOIN_AGENT ...]] [--remove REMOVE_USER [REMOVE_USER ...]]
-                       [--add ADD_USER [ADD_USER ...]]
-                       location
+usage: queue_helper.py [-h] [--location LOCATION [LOCATION ...]] [--queue QUEUE [QUEUE ...]]
+                       [--join JOIN_AGENT [JOIN_AGENT ...]] [--unjoin UNJOIN_AGENT [UNJOIN_AGENT ...]]
+                       [--remove REMOVE_USER [REMOVE_USER ...]] [--add ADD_USER [ADD_USER ...]] [--dryrun]
 
 Modify call queue settings from the CLI
 
-positional arguments:
-  location              name of location to work on. Can be "all" to work on all locations.
-
 optional arguments:
   -h, --help            show this help message and exit
+  --location LOCATION [LOCATION ...], -l LOCATION [LOCATION ...]
+                        name of location to work on. If missing then work on all locations.
   --queue QUEUE [QUEUE ...], -q QUEUE [QUEUE ...]
                         name(s) of queue(s) to operate on. If missing then work on all queues in location.
   --join JOIN_AGENT [JOIN_AGENT ...], -j JOIN_AGENT [JOIN_AGENT ...]
@@ -22,7 +20,7 @@ optional arguments:
                         Remove given agent from given queue(s). Can be "all" to act on all agents.
   --add ADD_USER [ADD_USER ...], -a ADD_USER [ADD_USER ...]
                         Add given users to given queue(s).
-
+  --dryrun, -d          Dry run; don't apply any changes
 """
 import asyncio
 import logging
