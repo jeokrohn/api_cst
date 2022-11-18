@@ -1,5 +1,5 @@
-Example code for CST session on Webex APIs in May 2022
-======================================================
+Example code for Introduction into WxC APIs
+===========================================
 
 Prepare the environment
 -----------------------
@@ -35,6 +35,9 @@ Examples
 * ``integration_token.py``: work with cached integration tokens
 * ``list_locations_sdk_int_tokens.py``: list locations using the ``wxc_sdk`` module and cached tokens
 * ``people_details.py``: get user details synchronously and using asyncio to compare performance
+* ``queue_helper.py``: command line tool to manage Webex Calling call queues
+* ``read_queues.py``: reading call queue details, printing summary to stdout an creating a CSV file
+* ``random_queues.py``: creating random call queues for a demo; shows call queue creation
 
 
 

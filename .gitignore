@@ -141,3 +141,6 @@ cython_debug/
 /integration_token.env
 /integration_token.yml
 
+/read_queues.csv
+
+/random_queues.json
