@@ -156,9 +156,12 @@ async def main():
         """
         # search for all names in parallel
         lists: list[list[Person]] = await asyncio.gather(
-            *[api.people.list(display_name=name) for name in user_names])
+            *[api.people.list(display_name=name) for name in user_names], return_exceptions=True)
         for name, user_list in zip(user_names, lists):
-            user = next((u for u in user_list if name == agent_name(u)), None)
+            if isinstance(user_list, Exception):
+                user = None
+            else:
+                user = next((u for u in user_list if name == agent_name(u)), None)
             if user is None:
                 print(f'user "{name}" not found', file=sys.stderr)
                 continue
