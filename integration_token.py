@@ -59,29 +59,13 @@ def get_tokens() -> Optional[Tokens]:
     :rtype: :class:`wxc_sdk.tokens.Tokens`
     """
 
-    def write_tokens(tokens_to_cache: Tokens):
-        with open(yml_path(), mode='w') as f:
-            safe_dump(json.loads(tokens_to_cache.json()), f)
-        return
-
-    def read_tokens() -> Optional[Tokens]:
-        try:
-            with open(yml_path(), mode='r') as f:
-                data = safe_load(f)
-                tokens_read = Tokens.parse_obj(data)
-        except Exception as e:
-            log.info(f'failed to read tokens from file: {e}')
-            tokens_read = None
-        return tokens_read
-
     # load environment variables from .env
     path = env_path()
     log.info(f'reading {path}')
     load_dotenv(env_path())
 
     integration = build_integration()
-    tokens = integration.get_cached_tokens(read_from_cache=read_tokens,
-                                           write_to_cache=write_tokens)
+    tokens = integration.get_cached_tokens_from_yml(yml_path=yml_path())
     return tokens
 
 
